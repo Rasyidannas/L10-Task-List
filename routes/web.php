@@ -16,3 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+//this is for 404 page
+Route::fallback(function () {
+    return "Still got somewhere";
+});
