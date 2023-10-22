@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -66,14 +67,27 @@ $tasks = [
     ),
 ];
 
-Route::get('/', function () use ($tasks) {
+Route::get('/', function () {
+    return redirect(route('tasks.index'));
+});
+
+Route::get('/tasks', function () use ($tasks) {
     return view('index', [
         'tasks' => $tasks
     ]);
 })->name('tasks.index');
 
-Route::get('/{id}', function($id) {
-    return 'one single task';
+Route::get('/tasks/{id}', function($id) use ($tasks) {
+    //this is will find task id same with $id
+    $task = collect($tasks)->firstWhere('id', $id);
+    // dd($task);
+
+    //tasks === null
+    if(!$task) {
+        abort(Response::HTTP_NOT_FOUND);
+    }
+
+    return view('show', ['task' => $task]);
 })->name('tasks.show');
 
 //this is for 404 page
