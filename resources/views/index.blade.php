@@ -1,4 +1,14 @@
-Hello I am a blade template
+<h1>
+   The list of tasks
+</h1>
 
-the name is {{ $name }}
+<div>
+      @forelse($tasks as $task)
+         <div>
+            <a href="{{ route('tasks.show', ['id' => $task->id]) }}">{{ $task->title }}</a>
+         </div>
+      @empty
+         <div>There are no tasks!</div>
+      @endforelse
+</div>
 
