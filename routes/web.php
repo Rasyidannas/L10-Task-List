@@ -26,14 +26,20 @@ Route::get('/tasks', function () {
     ]);
 })->name('tasks.index');
 
-//this is for show crete content
+//this is for show create content
 Route::view('/tasks/create', 'create')
     ->name('tasks.create');
+
+//this is for show edit tasks
+Route::get('/tasks/{id}/edit', function ($id) {
+    return view('edit', ['task' => Task::findOrFail($id)]);
+})->name('tasks.edit');
 
 Route::get('/tasks/{id}', function ($id) {
     return view('show', ['task' => Task::findOrFail($id)]);
 })->name('tasks.show');
 
+//this is for send new task
 Route::post('/tasks', function (Request $request) {
     //this is for validation data input
     $data = $request->validate([
@@ -52,6 +58,27 @@ Route::post('/tasks', function (Request $request) {
     return redirect()->route('tasks.show', ['id' => $task->id])
         ->with('success', 'Task created successfully!'); //this is for flash message
 })->name('tasks.store');
+
+//this is for send edit task
+Route::put('/tasks/{id}', function ($id, Request $request) {
+    //this is for validation data input
+    $data = $request->validate([
+        'title' => 'required|max:255',
+        'description' => 'required',
+        'long_description' => 'required',
+    ]);
+
+    //this is for find task by id and not found will go 404 page
+    $task = Task::findOrFail($id);
+    $task->title = $data['title'];
+    $task->description = $data['description'];
+    $task->long_description = $data['long_description'];
+
+    $task->save();
+
+    return redirect()->route('tasks.show', ['id' => $task->id])
+        ->with('success', 'Task updated successfully!'); //this is for flash message
+})->name('tasks.update');
 
 //this is for 404 page
 Route::fallback(function () {
