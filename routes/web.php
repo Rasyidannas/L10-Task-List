@@ -58,6 +58,13 @@ Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
         ->with('success', 'Task updated successfully!'); //this is for flash message
 })->name('tasks.update');
 
+Route::delete('/tasks/{task}', function (Task $task) {
+    $task->delete();
+
+    return redirect()->route('tasks.index')
+        ->with('success', 'Task deleted successfully!');
+})->name('tasks.destroy');
+
 //this is for 404 page
 Route::fallback(function () {
     return "Still got somewhere";
