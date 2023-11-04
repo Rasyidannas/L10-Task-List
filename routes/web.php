@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\TaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -30,53 +31,30 @@ Route::get('/tasks', function () {
 Route::view('/tasks/create', 'create')
     ->name('tasks.create');
 
-//this is for show edit tasks
-Route::get('/tasks/{id}/edit', function ($id) {
-    return view('edit', ['task' => Task::findOrFail($id)]);
+//this is for show edit tasks with model binding, so you will not using findOrFail static method
+Route::get('/tasks/{task}/edit', function (Task $task) {
+    return view('edit', ['task' => $task]);
 })->name('tasks.edit');
 
-Route::get('/tasks/{id}', function ($id) {
-    return view('show', ['task' => Task::findOrFail($id)]);
+Route::get('/tasks/{task}', function (Task $task) {
+    return view('show', ['task' => $task]);
 })->name('tasks.show');
 
 //this is for send new task
-Route::post('/tasks', function (Request $request) {
-    //this is for validation data input
-    $data = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required',
-    ]);
+Route::post('/tasks', function (TaskRequest $request) {
+    //this is for validation data input with save data
+    $task = Task::create($request->validated());
 
-    $task = new Task;
-    $task->title = $data['title'];
-    $task->description = $data['description'];
-    $task->long_description = $data['long_description'];
-
-    $task->save();
-
-    return redirect()->route('tasks.show', ['id' => $task->id])
+    return redirect()->route('tasks.show', ['task' => $task->id])
         ->with('success', 'Task created successfully!'); //this is for flash message
 })->name('tasks.store');
 
 //this is for send edit task
-Route::put('/tasks/{id}', function ($id, Request $request) {
-    //this is for validation data input
-    $data = $request->validate([
-        'title' => 'required|max:255',
-        'description' => 'required',
-        'long_description' => 'required',
-    ]);
+Route::put('/tasks/{task}', function (Task $task, TaskRequest $request) {
+    //this is for validation data input with update data
+    $task->update($request->validated());
 
-    //this is for find task by id and not found will go 404 page
-    $task = Task::findOrFail($id);
-    $task->title = $data['title'];
-    $task->description = $data['description'];
-    $task->long_description = $data['long_description'];
-
-    $task->save();
-
-    return redirect()->route('tasks.show', ['id' => $task->id])
+    return redirect()->route('tasks.show', ['task' => $task->id])
         ->with('success', 'Task updated successfully!'); //this is for flash message
 })->name('tasks.update');
 
