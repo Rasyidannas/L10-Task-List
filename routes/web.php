@@ -65,6 +65,14 @@ Route::delete('/tasks/{task}', function (Task $task) {
         ->with('success', 'Task deleted successfully!');
 })->name('tasks.destroy');
 
+//this is for action complete task
+Route::put('tasks/{task}/toggle-complete', function (Task $task) {
+    $task->toggleComplete(); //this is from Task model
+
+    //this will return in last page visited
+    return redirect()->back()->with('success', 'Task updated successfully!');
+})->name('tasks.toggle-complete');
+
 //this is for 404 page
 Route::fallback(function () {
     return "Still got somewhere";
