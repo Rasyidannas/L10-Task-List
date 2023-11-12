@@ -11,6 +11,7 @@
    @forelse($tasks as $task)
       <div>
          <a href="{{ route('tasks.show', ['task' => $task->id]) }}" 
+            {{-- this @class will have line-through for completed task --}}
             @class(['line-through' => $task->completed])>{{ $task->title }}</a>
       </div>
    @empty
